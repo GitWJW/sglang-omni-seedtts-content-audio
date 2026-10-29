@@ -69,9 +69,13 @@ def test_chat_stream_audio_formats_decode_once(monkeypatch, audio_field):
     monkeypatch.setattr(tts_tasks.base64, "b64decode", decode)
     monkeypatch.setattr(tts_tasks.time, "perf_counter", lambda: 12.5)
     pcm_chunks, chunk_times, text_times = [], [], []
-    audio_format = tts_tasks._collect_chat_streaming_audio(
+    audio_format = tts_tasks._collect_chat_streaming_audio(  # noqa: leading-underscore  # Exercise the existing stream parser directly.
         "data: " + json.dumps({"choices": [{"delta": delta}]}),
-        pcm_chunks, None, {}, chunk_times, text_times,
+        pcm_chunks,
+        None,
+        {},
+        chunk_times,
+        text_times,
     )
     assert audio_format == (16000, 1, 2)
     assert pcm_chunks == [b"\x01\x00" * 160]
@@ -94,9 +98,13 @@ def test_chat_stream_non_audio_content_stays_text(monkeypatch, content):
     """Text and invalid WAV candidates must not generate audio observations."""
     monkeypatch.setattr(tts_tasks.time, "perf_counter", lambda: 12.5)
     pcm_chunks, chunk_times, text_times = [], [], []
-    audio_format = tts_tasks._collect_chat_streaming_audio(
+    audio_format = tts_tasks._collect_chat_streaming_audio(  # noqa: leading-underscore  # Exercise the existing stream parser directly.
         "data: " + json.dumps({"choices": [{"delta": {"content": content}}]}),
-        pcm_chunks, None, {}, chunk_times, text_times,
+        pcm_chunks,
+        None,
+        {},
+        chunk_times,
+        text_times,
     )
     assert audio_format is None
     assert pcm_chunks == chunk_times == []

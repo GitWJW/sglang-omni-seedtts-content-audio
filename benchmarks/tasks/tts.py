@@ -1375,11 +1375,16 @@ def _collect_chat_streaming_audio(
                 with io.BytesIO(chunk_bytes) as buf:
                     with wave.open(buf, "rb") as wf:
                         decoded_format = (
-                            wf.getframerate(), wf.getnchannels(), wf.getsampwidth()
+                            wf.getframerate(),
+                            wf.getnchannels(),
+                            wf.getsampwidth(),
                         )
                         frame_count = wf.getnframes()
                         pcm_bytes = wf.readframes(frame_count)
-                        if len(pcm_bytes) != frame_count * decoded_format[1] * decoded_format[2]:
+                        if (
+                            len(pcm_bytes)
+                            != frame_count * decoded_format[1] * decoded_format[2]
+                        ):
                             raise wave.Error("Incomplete WAV audio frames")
                 content_is_audio = not has_audio_field
                 if pcm_bytes:
